@@ -51,8 +51,7 @@ contract Ownable is Context {
      * thereby removing any functionality that is only available to the owner.
      */
     function renounceOwnership() public onlyOwner {
-        emit OwnershipTransferred(_owner, address(0));
-        _owner = address(0);
+        revert("renouncing ownership is blocked");
     }
 
     /**
