@@ -192,3 +192,4 @@ dist
 
 # Truffle secret
 .secret
+.testnet-secret
