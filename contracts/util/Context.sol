@@ -1,4 +1,5 @@
-pragma solidity ^0.4.0;
+// SPDX-License-Identifier: GPL-3.0+
+pragma solidity ^0.6.12;
 
 contract Context {
     // Empty internal constructor, to prevent people from mistakenly deploying

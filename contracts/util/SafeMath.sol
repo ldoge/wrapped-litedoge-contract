@@ -1,4 +1,5 @@
-pragma solidity ^0.4.0;
+// SPDX-License-Identifier: GPL-3.0+
+pragma solidity ^0.6.12;
 
 /**
  * @dev Wrappers over Solidity's arithmetic operations with added overflow

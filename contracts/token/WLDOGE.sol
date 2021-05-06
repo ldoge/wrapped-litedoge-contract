@@ -1,4 +1,5 @@
-pragma solidity 0.6.4;
+// SPDX-License-Identifier: GPL-3.0+
+pragma solidity ^0.6.12;
 
 import "./IBEP20.sol";
 import "../util/Context.sol";
@@ -30,42 +31,42 @@ contract WLDOGE is Context, IBEP20, Ownable {
     /**
      * @dev Returns the bep token owner.
      */
-    function getOwner() external view returns (address) {
+    function getOwner() override external view returns (address) {
         return owner();
     }
 
     /**
      * @dev Returns the token decimals.
      */
-    function decimals() external view returns (uint8) {
+    function decimals() override external view returns (uint8) {
         return _decimals;
     }
 
     /**
      * @dev Returns the token symbol.
      */
-    function symbol() external view returns (string memory) {
+    function symbol() override external view returns (string memory) {
         return _symbol;
     }
 
     /**
     * @dev Returns the token name.
     */
-    function name() external view returns (string memory) {
+    function name() external override view returns (string memory) {
         return _name;
     }
 
     /**
      * @dev See {BEP20-totalSupply}.
      */
-    function totalSupply() external view returns (uint256) {
+    function totalSupply() override external view returns (uint256) {
         return _totalSupply;
     }
 
     /**
      * @dev See {BEP20-balanceOf}.
      */
-    function balanceOf(address account) external view returns (uint256) {
+    function balanceOf(address account) override external view returns (uint256) {
         return _balances[account];
     }
 
@@ -77,7 +78,7 @@ contract WLDOGE is Context, IBEP20, Ownable {
      * - `recipient` cannot be the zero address.
      * - the caller must have a balance of at least `amount`.
      */
-    function transfer(address recipient, uint256 amount) external returns (bool) {
+    function transfer(address recipient, uint256 amount) override external returns (bool) {
         _transfer(_msgSender(), recipient, amount);
         return true;
     }
@@ -85,7 +86,7 @@ contract WLDOGE is Context, IBEP20, Ownable {
     /**
      * @dev See {BEP20-allowance}.
      */
-    function allowance(address owner, address spender) external view returns (uint256) {
+    function allowance(address owner, address spender) override external view returns (uint256) {
         return _allowances[owner][spender];
     }
 
@@ -96,7 +97,7 @@ contract WLDOGE is Context, IBEP20, Ownable {
      *
      * - `spender` cannot be the zero address.
      */
-    function approve(address spender, uint256 amount) external returns (bool) {
+    function approve(address spender, uint256 amount) override external returns (bool) {
         _approve(_msgSender(), spender, amount);
         return true;
     }
@@ -113,7 +114,7 @@ contract WLDOGE is Context, IBEP20, Ownable {
      * - the caller must have allowance for `sender`'s tokens of at least
      * `amount`.
      */
-    function transferFrom(address sender, address recipient, uint256 amount) external returns (bool) {
+    function transferFrom(address sender, address recipient, uint256 amount) override external returns (bool) {
         _transfer(sender, recipient, amount);
         _approve(sender, _msgSender(), _allowances[sender][_msgSender()].sub(amount, "BEP20: transfer amount exceeds allowance"));
         return true;
