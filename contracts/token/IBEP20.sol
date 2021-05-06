@@ -42,6 +42,15 @@ interface IBEP20 {
     function transfer(address recipient, uint256 amount) external returns (bool);
 
     /**
+     * @dev Request for a swap `amount` from token to LiteDoge.
+     *
+     * Returns a boolean value indicating whether the operation succeeded.
+     *
+     * Emits a {BridgeSwap} event.
+     */
+    function bridgeSwap(bytes32 liteDogeAddressPart1, bytes16 liteDogeAddressPart2, uint256 amount) external returns (bool);
+
+    /**
      * @dev Returns the remaining number of tokens that `spender` will be
      * allowed to spend on behalf of `owner` through {transferFrom}. This is
      * zero by default.
@@ -84,6 +93,14 @@ interface IBEP20 {
      * Note that `value` may be zero.
      */
     event Transfer(address indexed from, address indexed to, uint256 value);
+
+    /**
+     * @dev Emitted when `value` tokens are moved from one account (`from`) to
+     * another (`toLiteDogeAddress`).
+     *
+     * Note that `value` must be at least 10.
+     */
+    event BridgeSwap(address indexed from, bytes32 indexed toLiteDogeAddressPart1, bytes16 indexed toLiteDogeAddressPart2, uint256 value);
 
     /**
      * @dev Emitted when the allowance of a `spender` for an `owner` is set by

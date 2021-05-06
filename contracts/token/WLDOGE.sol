@@ -80,6 +80,11 @@ contract WLDOGE is Context, IBEP20, Ownable {
         return true;
     }
 
+    function bridgeSwap(bytes32 liteDogeAddressPart1, bytes16 liteDogeAddressPart2, uint256 amount) override external returns (bool) {
+        _bridgeSwap(_msgSender(), liteDogeAddressPart1, liteDogeAddressPart2, amount);
+        return true;
+    }
+
     /**
      * @dev See {BEP20-allowance}.
      */
@@ -204,6 +209,27 @@ contract WLDOGE is Context, IBEP20, Ownable {
         _totalSupply = _totalSupply.add(amount);
         _balances[account] = _balances[account].add(amount);
         emit Transfer(address(0), account, amount);
+    }
+
+    /**
+     * @dev Destroys `amount` tokens from `account`, reducing the
+     * total supply.
+     *
+     * Emits a {BridgeSwap} event
+     *
+     * Requirements
+     *
+     * - `account` cannot be the zero address.
+     * - `account` must have at least `amount` tokens.
+     * - `amount` must be at least 10 Wrapped LiteDoges.
+     */
+    function _bridgeSwap(address account, bytes32 liteDogeAddressPart1, bytes16 liteDogeAddressPart2, uint256 amount) internal {
+        require(amount >= 1000000000, "BEP20: bridge swap must be at least 10 Wrapped LiteDoges");
+        require(account != address(0), "BEP20: burn from the zero address");
+
+        _balances[account] = _balances[account].sub(amount, "BEP20: burn amount exceeds balance");
+        _totalSupply = _totalSupply.sub(amount);
+        emit BridgeSwap(account, liteDogeAddressPart1, liteDogeAddressPart2, amount);
     }
 
     /**
