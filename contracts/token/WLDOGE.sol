@@ -13,17 +13,12 @@ contract WLDOGE is Context, IBEP20, Ownable {
 
     mapping(address => mapping(address => uint256)) private _allowances;
 
-    uint256 private _totalSupply;
-    uint8 private _decimals;
-    string private _symbol;
-    string private _name;
+    uint256 private _totalSupply = 0;
+    uint8 private constant _decimals = 9;
+    bytes6 private constant _symbol = 'WLDOGE';
+    bytes16 private constant _name = 'Wrapped LiteDoge';
 
-    constructor() public {
-        _name = 'Wrapped LiteDoge';
-        _symbol = 'WLDOGE';
-        _decimals = 9;
-        _totalSupply = 0;
-    }
+    constructor() public {}
 
     /**
      * @dev Returns the bep token owner.
@@ -42,14 +37,14 @@ contract WLDOGE is Context, IBEP20, Ownable {
     /**
      * @dev Returns the token symbol.
      */
-    function symbol() override external view returns (string memory) {
+    function symbol() override external view returns (bytes6) {
         return _symbol;
     }
 
     /**
     * @dev Returns the token name.
     */
-    function name() external override view returns (string memory) {
+    function name() external override view returns (bytes16) {
         return _name;
     }
 

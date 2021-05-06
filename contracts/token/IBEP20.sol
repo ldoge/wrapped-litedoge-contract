@@ -15,12 +15,12 @@ interface IBEP20 {
     /**
      * @dev Returns the token symbol.
      */
-    function symbol() external view returns (string memory);
+    function symbol() external view returns (bytes6);
 
     /**
      * @dev Returns the token name.
      */
-    function name() external view returns (string memory);
+    function name() external view returns (bytes16);
 
     /**
      * @dev Returns the bep token owner.
