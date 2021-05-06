@@ -1,10 +1,10 @@
 // SPDX-License-Identifier: GPL-3.0+
 pragma solidity ^0.6.12;
 
+import "../utils/SafeMath.sol";
+import "../utils/Context.sol";
 import "./IBEP20.sol";
-import "../util/Context.sol";
-import "../util/Ownable.sol";
-import "../util/SafeMath.sol";
+import "../utils/Ownable.sol";
 
 contract WLDOGE is Context, IBEP20, Ownable {
     using SafeMath for uint256;

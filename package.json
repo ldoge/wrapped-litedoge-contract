@@ -21,5 +21,8 @@
   "homepage": "https://github.com/ldoge/wrapped-litedoge-contract#readme",
   "dependencies": {
     "@truffle/hdwallet-provider": "1.2.2"
+  },
+  "devDependencies": {
+    "truffle-plugin-verify": "^0.5.7"
   }
 }

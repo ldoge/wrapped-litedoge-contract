@@ -191,7 +191,7 @@ dist
 .pnp.*
 
 # Truffle secret
-.secret
+env.json
 
 # Truffle Build
 build/
