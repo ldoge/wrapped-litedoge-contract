@@ -23,9 +23,6 @@ contract WLDOGE is Context, IBEP20, Ownable {
         _symbol = 'WLDOGE';
         _decimals = 9;
         _totalSupply = 0;
-        _balances[msg.sender] = _totalSupply;
-
-        emit Transfer(address(0), msg.sender, _totalSupply);
     }
 
     /**
