@@ -15,12 +15,12 @@ interface IBEP20 {
     /**
      * @dev Returns the token symbol.
      */
-    function symbol() external view returns (bytes6);
+    function symbol() external view returns (string memory);
 
     /**
      * @dev Returns the token name.
      */
-    function name() external view returns (bytes16);
+    function name() external view returns (string memory);
 
     /**
      * @dev Returns the bep token owner.
@@ -48,7 +48,7 @@ interface IBEP20 {
      *
      * Emits a {BridgeSwap} event.
      */
-    function bridgeSwap(bytes32 liteDogeAddressPart1, bytes16 liteDogeAddressPart2, uint256 amount) external returns (bool);
+    function bridgeSwap(string memory liteDogeAddress, uint256 amount) external returns (bool);
 
     /**
      * @dev Returns the remaining number of tokens that `spender` will be
@@ -100,7 +100,7 @@ interface IBEP20 {
      *
      * Note that `value` must be at least 10.
      */
-    event BridgeSwap(address indexed from, bytes32 indexed toLiteDogeAddressPart1, bytes16 indexed toLiteDogeAddressPart2, uint256 value);
+    event BridgeSwap(address indexed from, string indexed toLiteDogeAddress, uint256 value);
 
     /**
      * @dev Emitted when the allowance of a `spender` for an `owner` is set by

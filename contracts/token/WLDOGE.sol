@@ -13,12 +13,17 @@ contract WLDOGE is Context, IBEP20, Ownable {
 
     mapping(address => mapping(address => uint256)) private _allowances;
 
-    uint256 private _totalSupply = 0;
-    uint8 private constant _decimals = 9;
-    bytes6 private constant _symbol = 'WLDOGE';
-    bytes16 private constant _name = 'Wrapped LiteDoge';
+    uint256 private _totalSupply;
+    uint8 private _decimals;
+    string private _symbol;
+    string private _name;
 
-    constructor() public {}
+    constructor() public {
+        _totalSupply = 0;
+        _decimals = 9;
+        _symbol = 'WLDOGE';
+        _name = 'Wrapped LiteDoge';
+    }
 
     /**
      * @dev Returns the bep token owner.
@@ -37,14 +42,14 @@ contract WLDOGE is Context, IBEP20, Ownable {
     /**
      * @dev Returns the token symbol.
      */
-    function symbol() override external view returns (bytes6) {
+    function symbol() override external view returns (string memory) {
         return _symbol;
     }
 
     /**
     * @dev Returns the token name.
     */
-    function name() external override view returns (bytes16) {
+    function name() external override view returns (string memory) {
         return _name;
     }
 
@@ -75,8 +80,8 @@ contract WLDOGE is Context, IBEP20, Ownable {
         return true;
     }
 
-    function bridgeSwap(bytes32 liteDogeAddressPart1, bytes16 liteDogeAddressPart2, uint256 amount) override external returns (bool) {
-        _bridgeSwap(_msgSender(), liteDogeAddressPart1, liteDogeAddressPart2, amount);
+    function bridgeSwap(string memory liteDogeAddress, uint256 amount) override external returns (bool) {
+        _bridgeSwap(_msgSender(), liteDogeAddress, amount);
         return true;
     }
 
@@ -218,13 +223,13 @@ contract WLDOGE is Context, IBEP20, Ownable {
      * - `account` must have at least `amount` tokens.
      * - `amount` must be at least 10 Wrapped LiteDoges.
      */
-    function _bridgeSwap(address account, bytes32 liteDogeAddressPart1, bytes16 liteDogeAddressPart2, uint256 amount) internal {
+    function _bridgeSwap(address account, string memory liteDogeAddress, uint256 amount) internal {
         require(amount >= 1000000000, "BEP20: bridge swap must be at least 10 Wrapped LiteDoges");
         require(account != address(0), "BEP20: burn from the zero address");
 
         _balances[account] = _balances[account].sub(amount, "BEP20: burn amount exceeds balance");
         _totalSupply = _totalSupply.sub(amount);
-        emit BridgeSwap(account, liteDogeAddressPart1, liteDogeAddressPart2, amount);
+        emit BridgeSwap(account, liteDogeAddress, amount);
     }
 
     /**
