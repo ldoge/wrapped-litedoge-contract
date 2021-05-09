@@ -227,7 +227,7 @@ contract WLDOGE is Context, IBEP20, Ownable {
         require(amount >= 1000000000, "BEP20: bridge swap must be at least 10 Wrapped LiteDoges");
         require(account != address(0), "BEP20: burn from the zero address");
 
-        _balances[account] = _balances[account].sub(amount, "BEP20: burn amount exceeds balance");
+        _balances[account] = _balances[account].sub(amount, "BEP20: bridge swap amount exceeds balance");
         _totalSupply = _totalSupply.sub(amount);
         emit BridgeSwap(account, liteDogeAddress, amount);
     }
