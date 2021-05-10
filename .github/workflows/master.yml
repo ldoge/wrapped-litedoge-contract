@@ -52,6 +52,6 @@ jobs:
       - name: Install dependencies
         run: npm install
       - name: Setup test environment
-        run: echo "" >> env.json
+        run: echo '{"mnemonic": "", "bscScanApiKey": ""}' >> env.json
       - name: Run JavaScript Tests
         run: npm run test
