@@ -46,7 +46,7 @@ jobs:
           ./bnbchaind version
           ./bnbchaind testnet --acc-prefix tbnb --chain-id Binance-Dev --v 1
           sed -i "s/BEP12Height = 9223372036854775807/BEP12Height = 1/" ./mytestnet/node0/gaiad/config/app.toml
-          ./bnbchaind start --home ./mytestnet/node0/gaiad
+          ./bnbchaind start --home ./mytestnet/node0/gaiad &
       - name: Check if Testnet is running
         run: curl -s -X GET http://localhost:26657/status | jq
       - name: Install dependencies
