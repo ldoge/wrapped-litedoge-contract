@@ -12,7 +12,7 @@ jobs:
 
     strategy:
       matrix:
-        node-version: [ 14.10 ]
+        node-version: [ 16.10 ]
 
     steps:
       - uses: actions/checkout@v2
@@ -29,19 +29,26 @@ jobs:
           restore-keys: |
             ${{ runner.OS }}-node-
             ${{ runner.OS }}-
-      - name: Install dependencies
-        run: npm install
+      - name: Install git LFS
+        run: curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
       - name: Setup Binance Scam Chain
         run: |
-          bash <(wget -qO- https://raw.githubusercontent.com/binance-chain/node-binary/master/install.sh)
-          bnbchaind version
-          bnbcli version
-          cd $HOME
-          bnbchaind init --moniker test
-          bnbchaind testnet --v 1 --chain-id local-testnet
-          cp ./mynetwork/config/genesis $home/config
-          echo "\n" >> $home/config/app.toml
-          echo 'FixSignBytesOverflowHeight = 1' >> $home/config/app.toml
-          bnbchaind start --home $home
+          mkdir binance-testnet
+          cd binance-testnet
+          git clone --depth 1 https://github.com/binance-chain/node-binary.git
+          cd node-binary
+          git lfs pull -I fullnode/testnet/0.8.1/linux
+          git lfs pull -I cli/testnet/0.8.1/linux
+          cp ./node-binary/fullnode/testnet/0.8.1/linux/bnbchaind ./bnbchaind
+          cp ./node-binary/cli/testnet/0.8.1/linux/tbnbcli ./tbnbcli
+          chmod +x ./bnbchaind
+          ./bnbchaind version
+          ./bnbchaind testnet --acc-prefix tbnb --chain-id Binance-Dev --v 1
+          sed -i "s/BEP12Height = 9223372036854775807/BEP12Height = 1/" ./mytestnet/node0/gaiad/config/app.toml
+          ./bnbchaind start --home ./mytestnet/node0/gaiad
+      - name: Check if Testnet is running
+        run: curl -s -X GET http://localhost:26657/status | jq
+      - name: Install dependencies
+        run: npm install
       - name: Run JavaScript Tests
         run: npm run tests
