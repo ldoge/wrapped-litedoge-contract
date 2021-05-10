@@ -29,29 +29,12 @@ jobs:
           restore-keys: |
             ${{ runner.OS }}-node-
             ${{ runner.OS }}-
-      - name: Install git LFS
-        run: curl -s https://packagecloud.io/install/repositories/github/git-lfs/script.deb.sh | sudo bash
-      - name: Setup Binance Scam Chain
-        run: |
-          mkdir binance-testnet
-          cd binance-testnet
-          git clone --depth 1 https://github.com/binance-chain/node-binary.git
-          cd node-binary
-          git lfs pull -I fullnode/testnet/0.8.1/linux
-          git lfs pull -I cli/testnet/0.8.1/linux
-          cd ../
-          cp ./node-binary/fullnode/testnet/0.8.1/linux/bnbchaind ./bnbchaind
-          cp ./node-binary/cli/testnet/0.8.1/linux/tbnbcli ./tbnbcli
-          chmod +x ./bnbchaind
-          ./bnbchaind version
-          ./bnbchaind testnet --acc-prefix tbnb --chain-id Binance-Dev --v 1
-          sed -i "s/BEP12Height = 9223372036854775807/BEP12Height = 1/" ./mytestnet/node0/gaiad/config/app.toml
-          ./bnbchaind start --home ./mytestnet/node0/gaiad &
-      - name: Check if Testnet is running
-        run: curl -s -X GET http://localhost:26657/status | jq
       - name: Install dependencies
         run: npm install
       - name: Setup test environment
         run: echo '{"mnemonic":"", "bscScanApiKey":""}' >> env.json
+      - name: Setup Truffle Develop
+        run: |
+          ./node_modules/truffle/build/cli.bundled.js develop &
       - name: Run JavaScript Tests
         run: npm run test

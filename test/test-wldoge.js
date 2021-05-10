@@ -1,88 +1,62 @@
 const WLDOGE = artifacts.require("WLDOGE");
 
 contract("WLDOGE", accounts => {
-    it("should put 0 Wrapped LiteDoge in the first account", () =>
-        WLDOGE.deployed()
-            .then(instance => instance.getBalance.call(accounts[0]))
-            .then(balance => {
-                assert.equal(
-                    balance.valueOf(),
-                    0,
-                    "0 wasn't in the first account"
-                );
-            }));
-
-    it("should call a function that depends on a linked library", () => {
-        let wldoge;
-        let wldogeBalance;
-        let wldogeBnbBalance;
-
-        return WLDOGE.deployed()
-            .then(instance => {
-                wldoge = instance;
-                return wldoge.getBalance.call(accounts[0]);
-            })
-            .then(outCoinBalance => {
-                wldogeBalance = outCoinBalance.toNumber();
-                return wldoge.getBalanceInEth.call(accounts[0]);
-            })
-            .then(outCoinBalanceEth => {
-                wldogeBnbBalance = outCoinBalanceEth.toNumber();
-            })
-            .then(() => {
-                assert.equal(
-                    wldogeBnbBalance,
-                    2 * wldogeBalance,
-                    "Library function returned unexpected function, linkage may be broken"
-                );
-            });
+    it("should put 0 Wrapped LiteDoge in the first account", async () => {
+        const instance = await WLDOGE.deployed();
+        const balance = await instance.balanceOf.call(accounts[0]);
+        assert.equal(balance.valueOf(), 0);
     });
 
-    it("should send coin correctly", () => {
-        let wldoge;
+    it("should mint Wrapped LiteDoge in the first account", async () => {
+        const wldoge = await WLDOGE.deployed();
+        const mintAmount = 1000000;
+        const minted = await wldoge.mint.call(mintAmount);
+        assert.equal(minted.valueOf(), true);
 
+        const newBalance = await wldoge.balanceOf.call(accounts[0]);
+        assert.equal(newBalance.valueOf(), mintAmount);
+    });
+
+    it("should call a function that depends on a linked library", async () => {
+        const wldoge = await WLDOGE.deployed();
+        const outCoinBalance = await wldoge.balanceOf.call(accounts[0]);
+        const wldogeCoinBalance = outCoinBalance.toNumber();
+        const outCoinBalanceEth = await wldoge.getBalanceInEth.call(accounts[0]);
+        const wldogeCoinEthBalance = outCoinBalanceEth.toNumber();
+        assert.equal(wldogeCoinEthBalance, 2 * wldogeCoinBalance);
+    });
+
+    it("should send coin correctly", async () => {
         // Get initial balances of first and second account.
         const account_one = accounts[0];
         const account_two = accounts[1];
 
-        let account_one_starting_balance;
-        let account_two_starting_balance;
-        let account_one_ending_balance;
-        let account_two_ending_balance;
-
         const amount = 10;
 
-        return WLDOGE.deployed()
-            .then(instance => {
-                wldoge = instance;
-                return wldoge.getBalance.call(account_one);
-            })
-            .then(balance => {
-                account_one_starting_balance = balance.toNumber();
-                return wldoge.getBalance.call(account_two);
-            })
-            .then(balance => {
-                account_two_starting_balance = balance.toNumber();
-                return wldoge.sendCoin(account_two, amount, { from: account_one });
-            })
-            .then(() => wldoge.getBalance.call(account_one))
-            .then(balance => {
-                account_one_ending_balance = balance.toNumber();
-                return wldoge.getBalance.call(account_two);
-            })
-            .then(balance => {
-                account_two_ending_balance = balance.toNumber();
+        const wldoge = await WLDOGE.deployed();
 
-                assert.equal(
-                    account_one_ending_balance,
-                    account_one_starting_balance - amount,
-                    "Amount wasn't correctly taken from the sender"
-                );
-                assert.equal(
-                    account_two_ending_balance,
-                    account_two_starting_balance + amount,
-                    "Amount wasn't correctly sent to the receiver"
-                );
-            });
+        let balance = await wldoge.balanceOf.call(account_one);
+        const account_one_starting_balance = balance.toNumber();
+
+        balance = await wldoge.balanceOf.call(account_two);
+        const account_two_starting_balance = balance.toNumber();
+        await wldoge.transfer(account_two, amount, { from: account_one });
+
+        balance = await wldoge.balanceOf.call(account_one);
+        const account_one_ending_balance = balance.toNumber();
+
+        balance = await wldoge.balanceOf.call(account_two);
+        const account_two_ending_balance = balance.toNumber();
+
+        assert.equal(
+            account_one_ending_balance,
+            account_one_starting_balance - amount,
+            "Amount wasn't correctly taken from the sender"
+        );
+        assert.equal(
+            account_two_ending_balance,
+            account_two_starting_balance + amount,
+            "Amount wasn't correctly sent to the receiver"
+        );
     });
 });
