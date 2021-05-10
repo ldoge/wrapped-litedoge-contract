@@ -35,7 +35,7 @@ jobs:
         run: npm install -g truffle
       - name: Setup Binance Scam Chain
         run: |
-          sh <(wget -qO- https://raw.githubusercontent.com/binance-chain/node-binary/master/install.sh)
+          bash <(wget -qO- https://raw.githubusercontent.com/binance-chain/node-binary/master/install.sh)
           bnbchaind version
           bnbcli version
           cd $HOME
