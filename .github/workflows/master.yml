@@ -51,5 +51,7 @@ jobs:
         run: curl -s -X GET http://localhost:26657/status | jq
       - name: Install dependencies
         run: npm install
+      - name: Setup test environment
+        run: echo "" >> env.json
       - name: Run JavaScript Tests
         run: npm run test
