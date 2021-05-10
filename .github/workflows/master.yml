@@ -39,6 +39,7 @@ jobs:
           cd node-binary
           git lfs pull -I fullnode/testnet/0.8.1/linux
           git lfs pull -I cli/testnet/0.8.1/linux
+          cd ../
           cp ./node-binary/fullnode/testnet/0.8.1/linux/bnbchaind ./bnbchaind
           cp ./node-binary/cli/testnet/0.8.1/linux/tbnbcli ./tbnbcli
           chmod +x ./bnbchaind
