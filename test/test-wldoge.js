@@ -1,6 +1,13 @@
 const WLDOGE = artifacts.require("WLDOGE");
+const BN = require('bn.js');
 
 contract("WLDOGE", accounts => {
+    it("should have first address as owner", async () => {
+        const instance = await WLDOGE.deployed();
+        const owner = await instance.getOwner.call();
+        assert.equal(owner.valueOf(), accounts[0]);
+    });
+
     it("should put 0 Wrapped LiteDoge in the first account", async () => {
         const instance = await WLDOGE.deployed();
         const balance = await instance.balanceOf.call(accounts[0]);
@@ -9,21 +16,22 @@ contract("WLDOGE", accounts => {
 
     it("should mint Wrapped LiteDoge in the first account", async () => {
         const wldoge = await WLDOGE.deployed();
-        const mintAmount = 1000000;
-        const minted = await wldoge.mint.call(mintAmount);
-        assert.equal(minted.valueOf(), true);
+        const initialSupply = await wldoge.totalSupply.call();
+        assert.equal(initialSupply.valueOf().toJSON(), (new BN(0)).toJSON());
+        const mintAmount = new BN(1000000);
+        const canMint = await wldoge.mint.call(mintAmount);
+        assert.equal(canMint.valueOf(), true);
 
-        const newBalance = await wldoge.balanceOf.call(accounts[0]);
-        assert.equal(newBalance.valueOf(), mintAmount);
-    });
+        // Carry out actual mint event
+        await wldoge.mint(mintAmount);
 
-    it("should call a function that depends on a linked library", async () => {
-        const wldoge = await WLDOGE.deployed();
-        const outCoinBalance = await wldoge.balanceOf.call(accounts[0]);
-        const wldogeCoinBalance = outCoinBalance.toNumber();
-        const outCoinBalanceEth = await wldoge.getBalanceInEth.call(accounts[0]);
-        const wldogeCoinEthBalance = outCoinBalanceEth.toNumber();
-        assert.equal(wldogeCoinEthBalance, 2 * wldogeCoinBalance);
+        // Check if total supply increase
+        const newSupply = await wldoge.totalSupply.call();
+        assert.equal(newSupply.valueOf().toJSON(), mintAmount.toJSON());
+
+        // Check if first account HODLer has received it
+        const balance = await wldoge.balanceOf.call(accounts[0]);
+        assert.equal(balance.valueOf().toJSON(), mintAmount.toJSON());
     });
 
     it("should send coin correctly", async () => {
@@ -40,7 +48,7 @@ contract("WLDOGE", accounts => {
 
         balance = await wldoge.balanceOf.call(account_two);
         const account_two_starting_balance = balance.toNumber();
-        await wldoge.transfer(account_two, amount, { from: account_one });
+        await wldoge.transfer(account_two, amount, {from: account_one});
 
         balance = await wldoge.balanceOf.call(account_one);
         const account_one_ending_balance = balance.toNumber();
