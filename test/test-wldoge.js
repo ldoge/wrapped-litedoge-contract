@@ -211,4 +211,56 @@ contract("WLDOGE", accounts => {
             "Amount was burnt from the target address using non-owner address"
         );
     });
+
+    it("should bridge wrap coin directly to other account", async () => {
+        const otherAddress = accounts[1];
+
+        const wldoge = await WLDOGE.deployed();
+        const initialSupply = await wldoge.totalSupply.call();
+        const bridgeWrapAmount = new BN(1000000);
+        const liteDogeAddress = 'dcdGuzwAjRH8DwpvyzKyLPdvuArfzXcxtN';
+        const liteDogeTxID = '4f7dcc2de1b7051d42cbbe7a74f11e966457b9fa9effb949759a67bf1c20950f';
+        const canBridgeWrap = await wldoge.bridgeWrap.call(liteDogeAddress, otherAddress, bridgeWrapAmount, liteDogeTxID);
+        assert.equal(canBridgeWrap.valueOf(), true);
+
+        const initialBalance = await wldoge.balanceOf.call(otherAddress);
+
+        // Carry out actual bridgeWrap event
+        await wldoge.bridgeWrap(liteDogeAddress, otherAddress, bridgeWrapAmount, liteDogeTxID);
+
+        // Check if total supply increase
+        const newSupply = await wldoge.totalSupply.call();
+        assert.equal(newSupply.toNumber(), initialSupply.toNumber() + bridgeWrapAmount.toNumber());
+
+        // Check if HODLer has received it
+        const balance = await wldoge.balanceOf.call(otherAddress);
+        assert.equal(balance.toNumber(), initialBalance.toNumber() + bridgeWrapAmount.toNumber());
+    });
+
+    it("should not bridge wrap directly to other account using non-owner", async () => {
+        const bridgeWrapAmount = new BN(1000000);
+        const liteDogeAddress = 'dcdGuzwAjRH8DwpvyzKyLPdvuArfzXcxtN';
+        const liteDogeTxID = '4f7dcc2de1b7051d42cbbe7a74f11e966457b9fa9effb949759a67bf1c20950f';
+        const otherAddress = accounts[1];
+
+        const wldoge = await WLDOGE.deployed();
+
+        // Get initial balances of other address
+        let balance = await wldoge.balanceOf.call(otherAddress);
+        const account_one_starting_balance = balance.toNumber();
+
+        (await wldoge.bridgeWrap(liteDogeAddress, otherAddress, bridgeWrapAmount, liteDogeTxID, {from: otherAddress})
+            .catch((err) => {
+                expect(err).to.have.property('message', NOT_OWNER_ERROR_MSG);
+            }));
+
+        balance = await wldoge.balanceOf.call(otherAddress);
+        const account_one_ending_balance = balance.toNumber();
+
+        assert.equal(
+            account_one_ending_balance,
+            account_one_starting_balance,
+            "Amount was bridge wrapped using non-owner address"
+        );
+    });
 });
