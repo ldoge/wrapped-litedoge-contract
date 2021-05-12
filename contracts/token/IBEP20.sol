@@ -46,9 +46,9 @@ interface IBEP20 {
      *
      * Returns a boolean value indicating whether the operation succeeded.
      *
-     * Emits a {BridgeSwap} event.
+     * Emits a {BridgeWrap} event.
      */
-    function bridgeSwap(string memory liteDogeAddress, uint256 amount) external returns (bool);
+    function bridgeWrap(string memory liteDogeAddress, uint256 amount) external returns (bool);
 
     /**
      * @dev Returns the remaining number of tokens that `spender` will be
