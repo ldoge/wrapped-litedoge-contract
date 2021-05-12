@@ -95,12 +95,20 @@ interface IBEP20 {
     event Transfer(address indexed from, address indexed to, uint256 value);
 
     /**
+     * Wrapped LiteDoge -> LiteDoge
      * @dev Emitted when `value` tokens are moved from one account (`from`) to
      * another (`toLiteDogeAddress`).
      *
      * Note that `value` must be at least 10.
      */
-    event BridgeSwap(address indexed from, string indexed toLiteDogeAddress, uint256 value);
+    event BridgeUnwrap(address indexed from, string indexed toLiteDogeAddress, uint256 value);
+
+    /**
+     * LiteDoge -> Wrapped LiteDoge
+     * @dev Emitted a request to wrap LiteDoge has succeeded
+     *
+     */
+    event BridgeWrap(string indexed fromLiteDogeAddress, address indexed to, uint256 value, string indexed liteDogeTxID);
 
     /**
      * @dev Emitted when the allowance of a `spender` for an `owner` is set by

@@ -80,8 +80,13 @@ contract WLDOGE is Context, IBEP20, Ownable {
         return true;
     }
 
-    function bridgeSwap(string memory liteDogeAddress, uint256 amount) override external returns (bool) {
-        _bridgeSwap(_msgSender(), liteDogeAddress, amount);
+    function bridgeUnwrap(string memory liteDogeAddress, uint256 amount) override external returns (bool) {
+        _bridgeUnwrap(_msgSender(), liteDogeAddress, amount);
+        return true;
+    }
+
+    function bridgeWrap(string memory liteDogeAddress, address recipient, uint256 amount, string memory liteDogeTxID) public onlyOwner returns (bool) {
+        _bridgeWrap(liteDogeAddress, recipient, amount, liteDogeTxID);
         return true;
     }
 
@@ -237,7 +242,7 @@ contract WLDOGE is Context, IBEP20, Ownable {
      * @dev Destroys `amount` tokens from `account`, reducing the
      * total supply.
      *
-     * Emits a {BridgeSwap} event
+     * Emits a {BridgeUnwrap} event
      *
      * Requirements
      *
@@ -245,13 +250,31 @@ contract WLDOGE is Context, IBEP20, Ownable {
      * - `account` must have at least `amount` tokens.
      * - `amount` must be at least 10 Wrapped LiteDoges.
      */
-    function _bridgeSwap(address account, string memory liteDogeAddress, uint256 amount) internal {
+    function _bridgeUnwrap(address account, string memory liteDogeAddress, uint256 amount) internal {
         require(amount >= 1000000000, "BEP20: bridge swap must be at least 10 Wrapped LiteDoges");
         require(account != address(0), "BEP20: burn from the zero address");
 
         _balances[account] = _balances[account].sub(amount, "BEP20: bridge swap amount exceeds balance");
         _totalSupply = _totalSupply.sub(amount);
-        emit BridgeSwap(account, liteDogeAddress, amount);
+        emit BridgeUnwrap(account, liteDogeAddress, amount);
+    }
+
+    /**
+     * @dev Mints `amount` tokens to `account`, increasing the
+     * total supply.
+     *
+     * Emits a {BridgeWrap} event
+     *
+     * Requirements
+     *
+     * - `account` cannot be the zero address.
+     */
+    function _bridgeWrap(string memory liteDogeAddress, address account, uint256 amount, string memory liteDogeTxID) internal {
+        require(account != address(0), "BEP20: mint to the zero address");
+
+        _totalSupply = _totalSupply.add(amount);
+        _balances[account] = _balances[account].add(amount);
+        emit BridgeWrap(liteDogeAddress, account, amount, liteDogeTxID);
     }
 
     /**
