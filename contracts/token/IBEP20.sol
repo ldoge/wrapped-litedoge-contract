@@ -48,7 +48,7 @@ interface IBEP20 {
      *
      * Emits a {BridgeWrap} event.
      */
-    function bridgeWrap(string memory liteDogeAddress, uint256 amount) external returns (bool);
+    function bridgeUnwrap(string memory liteDogeAddress, uint256 amount) external returns (bool);
 
     /**
      * @dev Returns the remaining number of tokens that `spender` will be
