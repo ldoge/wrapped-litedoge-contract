@@ -3,6 +3,8 @@ const BN = require("bn.js");
 
 contract("WLDOGE", accounts => {
     const NOT_OWNER_ERROR_MSG = 'Returned error: VM Exception while processing transaction: revert Ownable: caller is not the owner -- Reason given: Ownable: caller is not the owner.';
+    const MINIMUM_NOT_MET_ERROR_MSG = 'Returned error: VM Exception while processing transaction: revert BEP20: bridge swap must be at least 10 Wrapped LiteDoges -- Reason given: BEP20: bridge swap must be at least 10 Wrapped LiteDoges.';
+    const INSUFFICIENT_UNWRAP_BALANCE_ERROR_MSG = 'Returned error: VM Exception while processing transaction: revert BEP20: bridge swap amount exceeds balance -- Reason given: BEP20: bridge swap amount exceeds balance.';
     let wldoge;
 
     before('setup contract for test', async () => {
@@ -163,6 +165,54 @@ contract("WLDOGE", accounts => {
             account_one_ending_balance,
             account_one_starting_balance - bridgeUnwrapAmount,
             "Amount wasn't correctly bridge unwrapped from the non-owner"
+        );
+    });
+
+    it("should not bridge unwrap coin with lesser than 10 LiteDoges using non-owner", async () => {
+        const bridgeUnwrapAmount = new BN(100000000);
+        const liteDogeAddress = 'dcdGuzwAjRH8DwpvyzKyLPdvuArfzXcxtN';
+        const otherAddress = accounts[1];
+
+        // Get initial balances of other account.
+        let balance = await wldoge.balanceOf.call(otherAddress);
+        const account_one_starting_balance = balance.toNumber();
+
+        (await wldoge.bridgeUnwrap(liteDogeAddress, bridgeUnwrapAmount.toNumber(), {from: otherAddress})
+            .catch((err) => {
+                expect(err).to.have.property('message', MINIMUM_NOT_MET_ERROR_MSG);
+            }));
+
+        balance = await wldoge.balanceOf.call(otherAddress);
+        const account_one_ending_balance = balance.toNumber();
+
+        assert.equal(
+            account_one_ending_balance,
+            account_one_starting_balance,
+            "Amount was bridge unwrapped using an amount below 10 LiteDoges"
+        );
+    });
+
+    it("should not bridge unwrap coin with insufficient balance of LiteDoges using non-owner", async () => {
+        const bridgeUnwrapAmount = new BN(1000000000);
+        const liteDogeAddress = 'dcdGuzwAjRH8DwpvyzKyLPdvuArfzXcxtN';
+        const otherAddress = accounts[3];
+
+        // Get initial balances of other account.
+        let balance = await wldoge.balanceOf.call(otherAddress);
+        const account_one_starting_balance = balance.toNumber();
+
+        (await wldoge.bridgeUnwrap(liteDogeAddress, bridgeUnwrapAmount.toNumber(), {from: otherAddress})
+            .catch((err) => {
+                expect(err).to.have.property('message', INSUFFICIENT_UNWRAP_BALANCE_ERROR_MSG);
+            }));
+
+        balance = await wldoge.balanceOf.call(otherAddress);
+        const account_one_ending_balance = balance.toNumber();
+
+        assert.equal(
+            account_one_ending_balance,
+            account_one_starting_balance,
+            "Amount was bridge unwrapped using insufficient balance of LiteDoges"
         );
     });
 });
